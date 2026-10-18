@@ -1,0 +1,56 @@
+---
+import { CATEGORIES } from '../site.config';
+import { href } from '../lib/url';
+
+interface Props {
+  count: number;
+  showCategories?: boolean;
+  q?: string;
+  action?: string;
+}
+
+const {
+  count,
+  showCategories = true,
+  q = '',
+  action = '/search/',
+} = Astro.props;
+---
+
+<form
+  class="filter-bar"
+  action={href(action)}
+  method="get"
+  role="search"
+  data-filter-bar
+>
+  <label class="form-field__label" for="filter-q">搜索</label>
+  <input
+    class="input"
+    id="filter-q"
+    name="q"
+    type="search"
+    value={q}
+    placeholder="标题、标签、模型…"
+    autocomplete="off"
+    data-filter-input
+  />
+  {showCategories && (
+    <div class="tag-row" role="group" aria-label="按分类筛选">
+      {CATEGORIES.map((category) => (
+        <button
+          type="button"
+          class="chip"
+          data-filter-tag={category.name}
+          aria-pressed="false"
+        >
+          {category.name}
+        </button>
+      ))}
+    </div>
+  )}
+  <button type="submit" class="btn btn--quiet">搜索</button>
+  <span class="mono-label filter-bar__count" data-filter-count aria-live="polite">
+    {count} 条
+  </span>
+</form>

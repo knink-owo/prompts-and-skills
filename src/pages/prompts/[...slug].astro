@@ -1,0 +1,104 @@
+---
+import { render } from 'astro:content';
+import type { GetStaticPaths } from 'astro';
+import Base from '../../layouts/Base.astro';
+import ChapterHero from '../../components/ChapterHero.astro';
+import EntryMeta from '../../components/EntryMeta.astro';
+import EntryRow from '../../components/EntryRow.astro';
+import Pager from '../../components/Pager.astro';
+import {
+  categoryHref,
+  formatDate,
+  getPrompts,
+  getRelated,
+  getSiblings,
+  toneOf,
+  type PromptEntry,
+} from '../../lib/content';
+import { href } from '../../lib/url';
+
+export const getStaticPaths = (async () => {
+  const prompts = await getPrompts();
+  return prompts.map((entry) => ({
+    params: { slug: entry.id },
+    props: { entry },
+  }));
+}) satisfies GetStaticPaths;
+
+interface Props {
+  entry: PromptEntry;
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+const data = entry.data;
+const [related, siblings] = await Promise.all([
+  getRelated(entry),
+  getSiblings(entry),
+]);
+const tone = toneOf(data.category);
+---
+
+<Base title={data.title} description={data.summary} ogType="article">
+  <ChapterHero
+    index={`PROMPT / v${data.version}`}
+    title={data.title}
+    lede={data.summary}
+    meta={`${data.category} · 更新 ${formatDate(data.updated)}`}
+    tone={tone}
+  />
+
+  <section class="section">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="section-head__index">01</p>
+        <h2 class="section-head__title">内容</h2>
+        <p class="section-head__lede">提示词在第一个代码块，右上角一键复制；后面是用法与限制。</p>
+      </div>
+      <div class="prose" data-code-label="PROMPT">
+        <Content />
+      </div>
+      <div class="btn-row">
+        <a class="btn" href={href(categoryHref(data.category))}>
+          更多「{data.category}」→
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="section-head__index">02</p>
+        <h2 class="section-head__title">条目信息</h2>
+        <p class="section-head__lede">版本、来源与许可；空字段不编造。</p>
+      </div>
+      <EntryMeta entry={entry} />
+    </div>
+  </section>
+
+  {related.length > 0 && (
+    <section class="section">
+      <div class="wrap">
+        <div class="section-head">
+          <p class="section-head__index">03</p>
+          <h2 class="section-head__title">相关条目</h2>
+          <p class="section-head__lede">按共享标签与同分类排序。</p>
+        </div>
+        <div class="chapter-index">
+          {related.map((item, index) => (
+            <EntryRow entry={item} index={index} />
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  {(siblings.prev || siblings.next) && (
+    <section class="section">
+      <div class="wrap">
+        <Pager prev={siblings.prev} next={siblings.next} />
+      </div>
+    </section>
+  )}
+</Base>

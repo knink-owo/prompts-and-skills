@@ -1,0 +1,25 @@
+---
+import Base from '../layouts/Base.astro';
+import ChapterHero from '../components/ChapterHero.astro';
+import { href } from '../lib/url';
+---
+
+<Base title="404" description="这条路径没有条目。" noindex>
+  <ChapterHero
+    index="ERROR / 404"
+    title="404"
+    lede="这条路径没有条目。可能是链接过期，也可能是条目还没写。"
+    meta="NOT FOUND"
+    tone="rouge"
+  />
+
+  <section class="section">
+    <div class="wrap">
+      <div class="btn-row">
+        <a class="btn btn--primary" href={href('/')}>回到首页</a>
+        <a class="btn" href={href('/prompts/')}>浏览提示词</a>
+        <a class="btn btn--quiet" href={href('/search/')}>搜索</a>
+      </div>
+    </div>
+  </section>
+</Base>

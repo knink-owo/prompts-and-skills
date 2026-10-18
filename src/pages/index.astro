@@ -1,0 +1,121 @@
+---
+import Base from '../layouts/Base.astro';
+import CategoryWall from '../components/CategoryWall.astro';
+import EntryRow from '../components/EntryRow.astro';
+import EmptyState from '../components/EmptyState.astro';
+import { CATEGORIES } from '../site.config';
+import {
+  formatDate,
+  getCategoryCounts,
+  getPrompts,
+  getStats,
+} from '../lib/content';
+import { href } from '../lib/url';
+
+const [counts, stats, prompts] = await Promise.all([
+  getCategoryCounts(),
+  getStats(),
+  getPrompts(),
+]);
+
+const featured = prompts.find((entry) => entry.data.featured) ?? prompts[0];
+const updated = prompts[0]?.data.updated;
+---
+
+<Base>
+  <section class="hero">
+    <div class="hero__copy">
+      <p class="mono-label">PERSONAL ARCHIVE / 2026</p>
+      <h1 class="display">
+        <span class="display__line">提示词</span>
+        <span class="display__line display__line--accent">索引</span>
+      </h1>
+      <p class="hero__lead">
+        把真正好用的提示词与技能收进来：原文可复制，用法可追溯，版本可比较。
+      </p>
+      <div class="hero__foot">
+        <p class="hero__note">
+          {String(stats.prompts).padStart(2, '0')} 条提示词 ·
+          {String(stats.skills).padStart(2, '0')} 个技能<br />
+          {String(stats.tags).padStart(2, '0')} 个标签 · 更新于
+          {updated ? formatDate(updated) : '—'}
+        </p>
+        <a class="btn btn--primary" href={href('/prompts/')}>浏览提示词 →</a>
+      </div>
+    </div>
+    <CategoryWall counts={counts} />
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="section-head__index">01</p>
+        <h2 class="section-head__title">最新收录</h2>
+        <p class="section-head__lede">每条都保留原文、用法与已知限制，不把提示词当魔法。</p>
+      </div>
+      {featured ? (
+        <div class="chapter-index">
+          <EntryRow entry={featured} index={0} />
+        </div>
+      ) : (
+        <EmptyState
+          title="还没有提示词"
+          body="在 src/content/prompts/ 下新建一个 Markdown 文件，或运行 pnpm new:prompt。"
+        />
+      )}
+      <div class="btn-row">
+        <a class="btn" href={href('/prompts/')}>全部提示词 →</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="section-head__index">02</p>
+        <h2 class="section-head__title">分类索引</h2>
+        <p class="section-head__lede">八个分类，各自对应一块色场；按使用场景找，而不是按热度。</p>
+      </div>
+      <div class="chapter-index">
+        {CATEGORIES.map((category, index) => (
+          <a
+            class={`chapter-row chapter-row--${category.tone}`}
+            href={href(`/categories/${category.slug}/`)}
+          >
+            <span class="chapter-row__num">{String(index + 1).padStart(2, '0')}</span>
+            <span class="chapter-row__title">{category.name}</span>
+            <span class="chapter-row__lede">
+              {category.description}
+              <span class="chapter-row__meta">{counts[category.name]} 条</span>
+            </span>
+            <span class="chapter-row__arrow" aria-hidden="true">→</span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="section-head__index">03</p>
+        <h2 class="section-head__title">技能</h2>
+        <p class="section-head__lede">可复用的 agent 技能：安装方式、适用环境与文件清单。</p>
+      </div>
+      {stats.skills === 0 ? (
+        <EmptyState
+          title="技能库还是空的"
+          body="第一条技能会出现在这里。它和提示词共用分类、标签与版本字段。"
+        >
+          <div class="btn-row">
+            <a class="btn" href={href('/about/')}>如何收录 →</a>
+          </div>
+        </EmptyState>
+      ) : (
+        <div class="btn-row">
+          <a class="btn" href={href('/skills/')}>浏览技能 →</a>
+        </div>
+      )}
+    </div>
+  </section>
+</Base>

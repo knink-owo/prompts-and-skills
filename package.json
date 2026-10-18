@@ -1,0 +1,21 @@
+{
+  "name": "prompts-and-skills",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@9.15.9",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro check && astro build",
+    "preview": "astro preview",
+    "verify": "pnpm build && node scripts/audit-build.mjs && node scripts/check-links.mjs",
+    "new:prompt": "node scripts/new-prompt.mjs",
+    "new:skill": "node scripts/new-skill.mjs"
+  },
+  "devDependencies": {
+    "@astrojs/check": "0.9.10",
+    "@astrojs/markdown-remark": "^7.3.3",
+    "astro": "7.4.0",
+    "typescript": "^6.0.3"
+  }
+}

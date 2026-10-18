@@ -1,0 +1,60 @@
+---
+import Base from '../../layouts/Base.astro';
+import ChapterHero from '../../components/ChapterHero.astro';
+import EntryRow from '../../components/EntryRow.astro';
+import EmptyState from '../../components/EmptyState.astro';
+import FilterBar from '../../components/FilterBar.astro';
+import { formatDate, getPrompts } from '../../lib/content';
+
+const prompts = await getPrompts();
+const latest = prompts[0]?.data.updated;
+const meta = [
+  `${String(prompts.length).padStart(2, '0')} 条`,
+  latest ? `最近更新 ${formatDate(latest)}` : '等待第一条',
+].join(' · ');
+---
+
+<Base
+  title="提示词"
+  description="全部提示词，按更新时间排序；支持关键词搜索与分类筛选，原文可一键复制。"
+>
+  <ChapterHero
+    index="COLLECTION / PROMPTS"
+    title="提示词"
+    lede="按主题、模型与使用场景整理。每条都能直接复制，附使用说明与已知限制。"
+    meta={meta}
+    tone="lake"
+  />
+
+  <section class="section" data-filter>
+    <div class="wrap">
+      <div class="section-head">
+        <p class="section-head__index">01</p>
+        <h2 class="section-head__title">全部提示词</h2>
+        <p class="section-head__lede">按更新时间排序。搜索与分类筛选在本地完成，不上传任何查询。</p>
+      </div>
+
+      <FilterBar count={prompts.length} />
+
+      {prompts.length > 0 ? (
+        <div class="chapter-index">
+          {prompts.map((entry, index) => (
+            <EntryRow entry={entry} index={index} />
+          ))}
+        </div>
+      ) : (
+        <EmptyState
+          title="还没有提示词"
+          body="在 src/content/prompts/ 下新建一个 Markdown 文件，或运行 pnpm new:prompt。"
+          filter={false}
+        />
+      )}
+
+      <EmptyState
+        hidden
+        title="没有匹配的提示词"
+        body="换一个关键词，或清除分类筛选。"
+      />
+    </div>
+  </section>
+</Base>

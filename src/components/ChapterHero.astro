@@ -1,0 +1,22 @@
+---
+import type { Tone } from '../site.config';
+
+interface Props {
+  index: string;
+  title: string;
+  lede?: string;
+  meta?: string;
+  tone?: Tone;
+}
+
+const { index, title, lede, meta, tone = 'lake' } = Astro.props;
+---
+
+<section class={`chapter-hero tone-${tone}`}>
+  <div class="wrap">
+    <p class="chapter-hero__index mono-label">{index}</p>
+    <h1 class="chapter-hero__title">{title}</h1>
+    {lede && <p class="chapter-hero__lede">{lede}</p>}
+    {meta && <p class="chapter-hero__meta">{meta}</p>}
+  </div>
+</section>

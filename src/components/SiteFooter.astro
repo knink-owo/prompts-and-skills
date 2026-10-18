@@ -1,0 +1,51 @@
+---
+import { SITE } from '../site.config';
+import { href } from '../lib/url';
+
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="wrap site-footer__grid">
+    <div class="site-footer__brand-col">
+      <p class="site-footer__brand">{SITE.name}</p>
+      <p class="site-footer__sub">{SITE.subtitle}</p>
+    </div>
+
+    <div>
+      <p class="site-footer__title">浏览</p>
+      <ul>
+        <li><a class="site-footer__link" href={href('/prompts/')}>提示词</a></li>
+        <li><a class="site-footer__link" href={href('/skills/')}>技能</a></li>
+        <li><a class="site-footer__link" href={href('/catalog/')}>目录</a></li>
+      </ul>
+    </div>
+
+    <div>
+      <p class="site-footer__title">关于</p>
+      <ul>
+        <li><a class="site-footer__link" href={href('/search/')}>搜索</a></li>
+        <li><a class="site-footer__link" href={href('/about/')}>关于本站</a></li>
+        {SITE.repo && (
+          <li>
+            <a class="site-footer__link" href={SITE.repo} rel="noreferrer">GitHub ↗</a>
+          </li>
+        )}
+      </ul>
+    </div>
+
+    <div>
+      <p class="site-footer__title">机器可读</p>
+      <ul>
+        <li><a class="site-footer__link" href={href('/sitemap.xml')}>sitemap.xml</a></li>
+        <li><a class="site-footer__link" href={href('/llms.txt')}>llms.txt</a></li>
+        <li><a class="site-footer__link" href={href('/robots.txt')}>robots.txt</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="wrap site-footer__bottom">
+    <p class="site-footer__fine">© {year} {SITE.name} · 内容用 Markdown 维护 · 设计语言 INK</p>
+    <p class="site-footer__fine">运行时零依赖 · 无外部字体与脚本</p>
+  </div>
+</footer>

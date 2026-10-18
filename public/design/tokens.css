@@ -1,0 +1,139 @@
+/* ==========================================================================
+   INK Design Language · tokens.css
+   v1.1 · implementation 1.1.3 · 2026-10
+   --------------------------------------------------------------------------
+   全站唯一的数值来源。改视觉先改这里，再同步：
+   - site/tokens.json   （machine twin，由 tools/sync_tokens.py 生成）
+   - site/DESIGN.md     （人读的规则，只解释为什么）
+   - site/AGENTS.md     （Agent 读的约束与验收）
+   硬规则：圆角恒 0；描边恒 1px 实线；阴影只给浮层；不引入外链资源。
+   ========================================================================== */
+
+:root {
+  color-scheme: light;
+
+  /* --- 色场：八个，各管一类信息 --------------------------------------- */
+  --ink-lake:   #6EA8A3;   /* 湖蓝 */
+  --ink-sky:    #87B9CE;   /* 天青 */
+  --ink-moss:   #8FB394;   /* 苔绿 */
+  --ink-lotus:  #A995C4;   /* 藕荷 */
+  --ink-wheat:  #D2B173;   /* 麦金 */
+  --ink-clay:   #CE927C;   /* 陶土 */
+  --ink-stone:  #94A7B0;   /* 石灰 */
+  --ink-rouge:  #C98D9B;   /* 胭脂 */
+
+  /* --- 中性 ----------------------------------------------------------- */
+  --ink-canvas:       #FAF9F5;   /* 纸白，页面底色 */
+  --ink-surface:      #FFFFFF;   /* 纯白，只给输入框与浮层 */
+  --ink-ink:          #26302C;   /* 墨，正文与标题 */
+  --ink-ink-deep:     #1B241F;   /* 深墨，色带页脚与代码块 */
+  --ink-ink-secondary: #5E6A64;  /* 次要文字，5.36:1 on canvas */
+  --ink-ink-muted:    #8B948E;   /* 弱化标记，仅用于非文本或大号字 */
+  --ink-line:         #E5E8E1;   /* 细线 */
+  --ink-text-on-color: #16211D;  /* 色场上的文字，6.1–8.1:1 */
+  --ink-text-on-ink:  #FFFFFF;   /* 深墨上的文字，13.6:1 */
+
+  /* --- 语义别名：组件只引用这一层 ------------------------------------- */
+  --ink-text-primary: var(--ink-ink);
+  --ink-text-secondary: var(--ink-ink-secondary);
+  --ink-text-muted: var(--ink-ink-muted);
+  --ink-text-lake: #5C8A85;   /* 湖蓝文字色（湖蓝 75% + 墨 25%）：纸白底 3.67:1，仅大号标题 */
+  --ink-text-secondary-on-ink: rgba(250, 249, 245, 0.64);
+  --ink-line-on-ink: rgba(255, 255, 255, 0.2);     /* 深墨上的细线 */
+  --ink-band-line: rgba(255, 255, 255, 0.32);       /* 色场之间的细线 */
+  --ink-link: var(--ink-ink);
+  --ink-focus: var(--ink-ink);
+  --ink-focus-width: 2px;
+  --ink-focus-offset: 4px;
+  --ink-control-border: var(--ink-ink-secondary);
+  --ink-success: #3F6B4C;  /* 4.6:1 on surface */
+  --ink-danger: #8C4150;   /* 5.8:1 on surface */
+  --ink-overlay: rgba(22, 33, 29, 0.42);
+
+  /* --- 字体 ----------------------------------------------------------- */
+  --ink-font: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+    "HarmonyOS Sans SC", "Noto Sans SC", "Microsoft YaHei", sans-serif;
+  /* 展示栈：等线/苹方这类几何黑体，笔画均匀、字洞大，用于首屏大字。 */
+  --ink-font-display: "DengXian", "PingFang SC", "HarmonyOS Sans SC",
+    "Noto Sans SC", "Microsoft YaHei", sans-serif;
+  --ink-font-mono: "Cascadia Code", "SFMono-Regular", Consolas,
+    "Liberation Mono", monospace;
+
+  /* --- 字重与字号 ----------------------------------------------------- */
+  --ink-weight-body: 400;
+  --ink-weight-display: 600;   /* 章节标题、小节标题 */
+  --ink-weight-hero: 700;      /* 首屏两行：等线 Bold / 苹方 Semibold */
+  --ink-weight-strong: 600;
+
+  --ink-size-display: clamp(3.25rem, 8vw, 7.5rem);    /* 52 → 120px */
+  --ink-size-h1: clamp(2.75rem, 6vw, 5.5rem);         /* 44 → 88px */
+  --ink-size-h2: clamp(2rem, 3.2vw, 2.75rem);         /* 32 → 44px */
+  --ink-size-h3: clamp(1.375rem, 1.8vw, 1.75rem);     /* 22 → 28px */
+  --ink-size-lead: clamp(1.125rem, 1.4vw, 1.375rem);  /* 18 → 22px */
+  --ink-size-body: 1rem;
+  --ink-size-small: 0.875rem;
+  --ink-size-mono: 0.75rem;
+  --ink-size-label: 0.6875rem;
+
+  --ink-leading-display: 1;
+  --ink-leading-heading: 1.14;
+  --ink-leading-body: 1.75;
+  --ink-tracking-display: -0.035em;
+  --ink-tracking-label: 0.14em;
+
+
+  /* --- 间距：只用这十个数 --------------------------------------------- */
+  --ink-space-1: 4px;
+  --ink-space-2: 8px;
+  --ink-space-3: 12px;
+  --ink-space-4: 16px;
+  --ink-space-5: 24px;
+  --ink-space-6: 32px;
+  --ink-space-7: 48px;
+  --ink-space-8: 64px;
+  --ink-space-9: 96px;
+  --ink-space-10: 128px;
+
+  /* --- 几何 ----------------------------------------------------------- */
+  --ink-radius: 0;
+  --ink-wrap: 1280px;
+  --ink-gutter: clamp(20px, 4vw, 56px);
+  --ink-header-h: 64px;
+  --ink-target: 44px;
+  --ink-measure: 34em;
+  --ink-border: 1px solid var(--ink-line);
+  --ink-border-strong: 1px solid var(--ink-ink);
+
+  /* --- 层级与浮层 ----------------------------------------------------- */
+  --ink-shadow-modal: 0 32px 80px rgba(27, 36, 31, 0.24),
+    0 2px 8px rgba(27, 36, 31, 0.08);
+  --ink-z-header: 20;
+  --ink-z-modal: 60;
+
+  /* --- 动效 ----------------------------------------------------------- */
+  --ink-ease-in: cubic-bezier(0.1, 0.9, 0.2, 1);
+  --ink-ease-out: cubic-bezier(0.7, 0, 1, 0.5);
+  --ink-ease-snap: cubic-bezier(0.17, 0.89, 0.32, 1.18);
+  --ink-duration-hover: 200ms;
+  --ink-duration-press: 140ms;
+  --ink-duration-expand: 380ms;
+  --ink-duration-collapse: 240ms;
+  --ink-duration-page: 420ms;
+  --ink-stagger: 45ms;
+  --ink-shift: 6px;
+  --ink-press-scale: 0.975;
+}
+
+/* 用户要求减少动效时，全部归零：不播动画，不做位移。 */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --ink-duration-hover: 0ms;
+    --ink-duration-press: 0ms;
+    --ink-duration-expand: 0ms;
+    --ink-duration-collapse: 0ms;
+    --ink-duration-page: 0ms;
+    --ink-stagger: 0ms;
+    --ink-shift: 0px;
+    --ink-press-scale: 1;
+  }
+}

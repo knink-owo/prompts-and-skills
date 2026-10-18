@@ -1,0 +1,33 @@
+---
+import type { AnyEntry } from '../lib/content';
+import { entryHref } from '../lib/content';
+import { href } from '../lib/url';
+
+interface Props {
+  prev?: AnyEntry;
+  next?: AnyEntry;
+}
+
+const { prev, next } = Astro.props;
+---
+
+{(prev || next) && (
+  <nav class="pager" aria-label="同系列翻页">
+    {prev ? (
+      <a class="pager__link" href={href(entryHref(prev))}>
+        <span class="pager__dir">← 上一条</span>
+        <span class="pager__title">{prev.data.title}</span>
+      </a>
+    ) : (
+      <span />
+    )}
+    {next ? (
+      <a class="pager__link pager__link--next" href={href(entryHref(next))}>
+        <span class="pager__dir">下一条 →</span>
+        <span class="pager__title">{next.data.title}</span>
+      </a>
+    ) : (
+      <span />
+    )}
+  </nav>
+)}

@@ -1,0 +1,42 @@
+---
+import type { AnyEntry } from '../lib/content';
+import {
+  collectionLabel,
+  entryHref,
+  formatDate,
+  searchText,
+  toneOf,
+} from '../lib/content';
+import { tagSlug } from '../lib/tags';
+import { href } from '../lib/url';
+
+interface Props {
+  entry: AnyEntry;
+  index: number;
+  hidden?: boolean;
+}
+
+const { entry, index, hidden = false } = Astro.props;
+const data = entry.data;
+const number = String(index + 1).padStart(2, '0');
+---
+
+<a
+  class={`chapter-row chapter-row--${toneOf(data.category)}`}
+  href={href(entryHref(entry))}
+  data-filter-item
+  data-category={data.category}
+  data-tags={data.tags.map(tagSlug).join('|')}
+  data-search-text={searchText(entry)}
+  hidden={hidden}
+>
+  <span class="chapter-row__num">{number}</span>
+  <span class="chapter-row__title">{data.title}</span>
+  <span class="chapter-row__lede">
+    {data.summary}
+    <span class="chapter-row__meta">
+      {collectionLabel(entry)} · {data.category} · {formatDate(data.updated)}
+    </span>
+  </span>
+  <span class="chapter-row__arrow" aria-hidden="true">→</span>
+</a>

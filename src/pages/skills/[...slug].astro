@@ -1,0 +1,133 @@
+---
+import { render } from 'astro:content';
+import type { GetStaticPaths } from 'astro';
+import Base from '../../layouts/Base.astro';
+import ChapterHero from '../../components/ChapterHero.astro';
+import EntryMeta from '../../components/EntryMeta.astro';
+import EntryRow from '../../components/EntryRow.astro';
+import Pager from '../../components/Pager.astro';
+import {
+  categoryHref,
+  formatDate,
+  getRelated,
+  getSiblings,
+  getSkills,
+  toneOf,
+  type SkillEntry,
+} from '../../lib/content';
+import { href } from '../../lib/url';
+
+export const getStaticPaths = (async () => {
+  const skills = await getSkills();
+  return skills.map((entry) => ({
+    params: { slug: entry.id },
+    props: { entry },
+  }));
+}) satisfies GetStaticPaths;
+
+interface Props {
+  entry: SkillEntry;
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+const data = entry.data;
+const [related, siblings] = await Promise.all([
+  getRelated(entry),
+  getSiblings(entry),
+]);
+const tone = toneOf(data.category);
+const installId = 'skill-install';
+---
+
+<Base title={data.title} description={data.summary} ogType="article">
+  <ChapterHero
+    index={`SKILL / v${data.version}`}
+    title={data.title}
+    lede={data.summary}
+    meta={`${data.category} · 更新 ${formatDate(data.updated)}`}
+    tone={tone}
+  />
+
+  <section class="section">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="section-head__index">01</p>
+        <h2 class="section-head__title">安装</h2>
+        <p class="section-head__lede">可复制的安装命令或放置路径；没有填写时以正文说明为准。</p>
+      </div>
+      {data.install ? (
+        <div class="code-block">
+          <div class="code-block__head">
+            <span class="mono-label">INSTALL</span>
+            <button
+              type="button"
+              class="copy-btn"
+              data-copy-target={`#${installId}`}
+              aria-label="复制安装命令"
+            >
+              <span data-copy-label aria-live="polite">复制</span>
+            </button>
+          </div>
+          <pre class="code-block__body" id={installId}>{data.install}</pre>
+        </div>
+      ) : (
+        <p class="note">这条技能没有单独填写安装命令，下面正文里会说明放置位置。</p>
+      )}
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="section-head__index">02</p>
+        <h2 class="section-head__title">说明</h2>
+        <p class="section-head__lede">技能正文、使用方式与限制。</p>
+      </div>
+      <div class="prose" data-code-label="CODE">
+        <Content />
+      </div>
+      <div class="btn-row">
+        <a class="btn" href={href(categoryHref(data.category))}>
+          更多「{data.category}」→
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="section-head__index">03</p>
+        <h2 class="section-head__title">条目信息</h2>
+        <p class="section-head__lede">兼容环境、版本、来源与许可。</p>
+      </div>
+      <EntryMeta entry={entry} />
+    </div>
+  </section>
+
+  {related.length > 0 && (
+    <section class="section">
+      <div class="wrap">
+        <div class="section-head">
+          <p class="section-head__index">04</p>
+          <h2 class="section-head__title">相关条目</h2>
+          <p class="section-head__lede">按共享标签与同分类排序。</p>
+        </div>
+        <div class="chapter-index">
+          {related.map((item, index) => (
+            <EntryRow entry={item} index={index} />
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  {(siblings.prev || siblings.next) && (
+    <section class="section">
+      <div class="wrap">
+        <Pager prev={siblings.prev} next={siblings.next} />
+      </div>
+    </section>
+  )}
+</Base>

@@ -1,0 +1,74 @@
+---
+import Base from '../layouts/Base.astro';
+import ChapterHero from '../components/ChapterHero.astro';
+import EmptyState from '../components/EmptyState.astro';
+import { CATEGORIES } from '../site.config';
+import { getAllTags, getCategoryCounts, getStats } from '../lib/content';
+import { href } from '../lib/url';
+
+const [tags, counts, stats] = await Promise.all([
+  getAllTags(),
+  getCategoryCounts(),
+  getStats(),
+]);
+---
+
+<Base
+  title="目录"
+  description="按分类与标签浏览全部提示词和技能；分类对应固定的色场，标签按使用频率排序。"
+>
+  <ChapterHero
+    index="INDEX / CATALOG"
+    title="目录"
+    lede="按分类与标签浏览。分类是固定的八个入口，标签是跨条目的自由连接。"
+    meta={`${stats.prompts} 条提示词 · ${stats.skills} 个技能 · ${tags.length} 个标签`}
+    tone="stone"
+  />
+
+  <section class="section">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="section-head__index">01</p>
+        <h2 class="section-head__title">分类</h2>
+        <p class="section-head__lede">八个分类，每个分类一个色场；从使用场景进入。</p>
+      </div>
+      <div class="chapter-index">
+        {CATEGORIES.map((category, index) => (
+          <a
+            class={`chapter-row chapter-row--${category.tone}`}
+            href={href(`/categories/${category.slug}/`)}
+          >
+            <span class="chapter-row__num">{String(index + 1).padStart(2, '0')}</span>
+            <span class="chapter-row__title">{category.name}</span>
+            <span class="chapter-row__lede">
+              {category.description}
+              <span class="chapter-row__meta">{counts[category.name]} 条</span>
+            </span>
+            <span class="chapter-row__arrow" aria-hidden="true">→</span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="section-head__index">02</p>
+        <h2 class="section-head__title">标签</h2>
+        <p class="section-head__lede">按出现次数排序；点进去可以看同一标签下的全部条目。</p>
+      </div>
+      {tags.length > 0 ? (
+        <div class="tag-row">
+          {tags.map((tag) => (
+            <a class="chip" href={href(`/tags/${tag.slug}/`)}>
+              {tag.name} · {tag.count}
+            </a>
+          ))}
+        </div>
+      ) : (
+        <EmptyState title="还没有标签" body="给条目加 tags 后，标签会自动出现在这里。" />
+      )}
+    </div>
+  </section>
+</Base>

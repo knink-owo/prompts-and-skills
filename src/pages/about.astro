@@ -1,0 +1,92 @@
+---
+import Base from '../layouts/Base.astro';
+import ChapterHero from '../components/ChapterHero.astro';
+import { SITE } from '../site.config';
+import { href } from '../lib/url';
+
+const repo = SITE.repo;
+---
+
+<Base
+  title="关于"
+  description="这个站点的用途、内容组织方式、字段说明与设计约束。"
+>
+  <ChapterHero
+    index="ABOUT / COLOPHON"
+    title="关于"
+    lede="一个只读的个人收藏：把真正好用的提示词与技能收进来，保留原文、用法与限制。"
+    meta="静态站点 · 无后端 · 无追踪"
+    tone="wheat"
+  />
+
+  <section class="section">
+    <div class="wrap">
+      <div class="prose" data-code-label="CODE">
+        <h2>这是什么</h2>
+        <p>
+          这是个人使用的提示词与技能索引。它不是提示词大全，也不追求数量；每条内容都尽量回答三个问题：解决什么问题、怎么用、哪里会失效。
+        </p>
+        <p>
+          站点是纯静态的：没有后端、没有数据库、没有账号，也没有分析脚本。所有页面在构建时生成，部署在 GitHub Pages。
+        </p>
+
+        <h2>内容怎么组织</h2>
+        <p>
+          内容以 Markdown 存放在仓库里，提示词在 <code>src/content/prompts/</code>，技能在 <code>src/content/skills/</code> 技能与提示词共用一套 frontmatter。新增一条后，列表、分类、标签、搜索索引和 sitemap 都会在下次构建时更新。
+        </p>
+        <p>新增条目可以直接新建 Markdown，也可以用脚本生成骨架：</p>
+        <pre><code>pnpm new:prompt
+pnpm new:skill</code></pre>
+        <p>写完后本地验证：</p>
+        <pre><code>pnpm verify</code></pre>
+
+        <h2>字段</h2>
+        <div class="table-wrap">
+          <table class="spec-table">
+            <caption>frontmatter 字段</caption>
+            <thead>
+              <tr><th scope="col">字段</th><th scope="col">必填</th><th scope="col">说明</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><code>title</code></td><td>是</td><td>中文标题，同时用于页面标题与列表。</td></tr>
+              <tr><td><code>summary</code></td><td>是</td><td>一句话摘要，最多 200 字；列表与 meta description 共用。</td></tr>
+              <tr><td><code>category</code></td><td>是</td><td>八个固定分类之一；决定条目的色场。</td></tr>
+              <tr><td><code>tags</code></td><td>否</td><td>自由标签；自动生成标签页。</td></tr>
+              <tr><td><code>models</code></td><td>否</td><td>适用模型；只写真正验证过的。</td></tr>
+              <tr><td><code>version</code></td><td>否</td><td>条目版本，默认 <code>0.1.0</code>。</td></tr>
+              <tr><td><code>updated</code></td><td>是</td><td>最后更新日期；决定排序与 sitemap lastmod。</td></tr>
+              <tr><td><code>author</code></td><td>否</td><td>原作者；转载时填写。</td></tr>
+              <tr><td><code>license</code></td><td>否</td><td>许可；不填时页面显示「未声明」。</td></tr>
+              <tr><td><code>source</code></td><td>否</td><td>来源链接或出处说明。</td></tr>
+              <tr><td><code>featured</code></td><td>否</td><td>首页优先展示；默认 <code>false</code>。</td></tr>
+              <tr><td><code>draft</code></td><td>否</td><td>草稿不进入构建；默认 <code>false</code>。</td></tr>
+              <tr><td><code>usage</code></td><td>否</td><td>仅提示词：一句话用法。</td></tr>
+              <tr><td><code>variables</code></td><td>否</td><td>仅提示词：变量名与说明。</td></tr>
+              <tr><td><code>install</code></td><td>否</td><td>仅技能：安装命令或放置路径。</td></tr>
+              <tr><td><code>compatibility</code></td><td>否</td><td>仅技能：适用环境。</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h2>设计说明</h2>
+        <p>
+          视觉使用 INK 设计语言：纸白底、0 圆角、1px 描边、八块色场、系统字体。运行时只加载两份 CSS 和一份原生 JS，不引框架、CDN、外链字体或图标库。
+        </p>
+        <p>
+          页面里没有暗色模式，也没有动画库。搜索、分类筛选和代码复制都由原生 JavaScript 完成；禁用脚本时，列表、详情和链接仍然可读。
+        </p>
+
+        <h2>许可与反馈</h2>
+        <p>
+          除非条目单独标注，本站内容默认保留所有权利。若发现错误，欢迎通过仓库 Issue 指出；不接受匿名内容提交。
+        </p>
+        {repo ? (
+          <p><a href={repo} rel="noreferrer">{repo}</a></p>
+        ) : (
+          <p class="note">仓库地址尚未填写；部署前在 <code>src/site.config.ts</code> 的 <code>SITE.repo</code> 里补上。</p>
+        )}
+        <p><a href={href('/llms.txt')}>llms.txt</a> 提供机器可读的条目清单。</p>
+      </div>
+    </div>
+  </section>
+</Base>

@@ -1,0 +1,94 @@
+---
+import type { AnyEntry } from '../lib/content';
+import { categoryHref, formatDate } from '../lib/content';
+import { tagSlug } from '../lib/tags';
+import { href } from '../lib/url';
+
+interface Props {
+  entry: AnyEntry;
+}
+
+const { entry } = Astro.props;
+const data = entry.data;
+const variables = 'variables' in data ? data.variables : [];
+const compatibility = 'compatibility' in data ? data.compatibility : [];
+const isExternal = /^https?:\/\//.test(data.source);
+---
+
+<div class="table-wrap entry-meta">
+  <table class="spec-table">
+    <caption>条目信息</caption>
+    <tbody>
+      <tr>
+        <th scope="row">分类</th>
+        <td><a href={href(categoryHref(data.category))}>{data.category}</a></td>
+      </tr>
+      <tr>
+        <th scope="row">标签</th>
+        <td>
+          {data.tags.length > 0 ? (
+            <span class="tag-row">
+              {data.tags.map((tag) => (
+                <a class="chip" href={href(`/tags/${tagSlug(tag)}/`)}>{tag}</a>
+              ))}
+            </span>
+          ) : (
+            '—'
+          )}
+        </td>
+      </tr>
+      <tr>
+        <th scope="row">适用模型</th>
+        <td>{data.models.length > 0 ? data.models.join('、') : '—'}</td>
+      </tr>
+      {compatibility.length > 0 && (
+        <tr>
+          <th scope="row">兼容环境</th>
+          <td>{compatibility.join('、')}</td>
+        </tr>
+      )}
+      <tr>
+        <th scope="row">版本</th>
+        <td>{data.version}</td>
+      </tr>
+      <tr>
+        <th scope="row">更新</th>
+        <td>{formatDate(data.updated)}</td>
+      </tr>
+      {data.author && (
+        <tr>
+          <th scope="row">作者</th>
+          <td>{data.author}</td>
+        </tr>
+      )}
+      <tr>
+        <th scope="row">许可</th>
+        <td>{data.license || '未声明'}</td>
+      </tr>
+      {data.source && (
+        <tr>
+          <th scope="row">来源</th>
+          <td>
+            {isExternal ? (
+              <a href={data.source} rel="noreferrer">{data.source}</a>
+            ) : (
+              data.source
+            )}
+          </td>
+        </tr>
+      )}
+      {variables.length > 0 && (
+        <tr>
+          <th scope="row">变量</th>
+          <td>
+            <ul>
+              {variables.map((variable) => (
+                <li><code>{variable.name}</code> — {variable.description}</li>
+              ))}
+            </ul>
+          </td>
+        </tr>
+      )}
+    </tbody>
+  </table>
+</div>

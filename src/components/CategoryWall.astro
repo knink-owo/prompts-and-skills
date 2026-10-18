@@ -1,0 +1,23 @@
+---
+import { CATEGORIES } from '../site.config';
+import { href } from '../lib/url';
+
+interface Props {
+  counts: Record<string, number>;
+}
+
+const { counts } = Astro.props;
+---
+
+<aside class="hero__wall" aria-label="分类索引">
+  {CATEGORIES.map((category) => (
+    <a
+      class={`wall-band tone-${category.tone}`}
+      href={href(`/categories/${category.slug}/`)}
+      title={category.description}
+    >
+      <span class="wall-band__name">{category.name}</span>
+      <span class="wall-band__count">{String(counts[category.name] ?? 0).padStart(2, '0')}</span>
+    </a>
+  ))}
+</aside>

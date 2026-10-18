@@ -1,0 +1,16 @@
+---
+interface Props {
+  title: string;
+  body?: string;
+  hidden?: boolean;
+  filter?: boolean;
+}
+
+const { title, body, hidden = false, filter = true } = Astro.props;
+---
+
+<div class="note" data-filter-empty={filter ? '' : undefined} hidden={hidden}>
+  <strong>{title}</strong>
+  {body && <p>{body}</p>}
+  <slot />
+</div>

@@ -1,0 +1,70 @@
+---
+import type { GetStaticPaths } from 'astro';
+import Base from '../../layouts/Base.astro';
+import ChapterHero from '../../components/ChapterHero.astro';
+import EntryRow from '../../components/EntryRow.astro';
+import EmptyState from '../../components/EmptyState.astro';
+import FilterBar from '../../components/FilterBar.astro';
+import { getAllTags, getEntriesByTag } from '../../lib/content';
+import { href } from '../../lib/url';
+
+export const getStaticPaths = (async () => {
+  const tags = await getAllTags();
+  return tags.map((tag) => ({
+    params: { tag: tag.slug },
+    props: { tag },
+  }));
+}) satisfies GetStaticPaths;
+
+interface Props {
+  tag: { name: string; slug: string; count: number };
+}
+
+const { tag } = Astro.props;
+const entries = await getEntriesByTag(tag.slug);
+---
+
+<Base
+  title={`#${tag.name} · 标签`}
+  description={`标签「${tag.name}」下的全部提示词与技能。`}
+>
+  <ChapterHero
+    index={`TAG / ${tag.slug.toUpperCase()}`}
+    title={`#${tag.name}`}
+    lede="同一标签下的条目，可能跨提示词与技能。"
+    meta={`${entries.length} 条`}
+    tone="sky"
+  />
+
+  <section class="section" data-filter>
+    <div class="wrap">
+      <div class="section-head">
+        <p class="section-head__index">01</p>
+        <h2 class="section-head__title">标签下的条目</h2>
+        <p class="section-head__lede">按更新时间排序；可在本标签内继续搜索。</p>
+      </div>
+
+      <FilterBar count={entries.length} showCategories={false} />
+
+      {entries.length > 0 ? (
+        <div class="chapter-index">
+          {entries.map((entry, index) => (
+            <EntryRow entry={entry} index={index} />
+          ))}
+        </div>
+      ) : (
+        <EmptyState title="这个标签下还没有条目" body="去目录看看其他标签。" />
+      )}
+
+      <EmptyState
+        hidden
+        title="没有匹配的条目"
+        body="换一个关键词，或清除搜索。"
+      />
+
+      <div class="btn-row">
+        <a class="btn" href={href('/catalog/')}>← 返回目录</a>
+      </div>
+    </div>
+  </section>
+</Base>

@@ -1,0 +1,30 @@
+---
+import { SITE } from '../site.config';
+import { href } from '../lib/url';
+
+const path = Astro.url.pathname;
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const current = (base && path.startsWith(base) ? path.slice(base.length) : path) || '/';
+const isActive = (target: string) =>
+  target === '/' ? current === '/' : current.startsWith(target);
+---
+
+<header class="site-header">
+  <div class="wrap site-header__inner">
+    <a class="brand" href={href('/')}>
+      {SITE.name}
+      <span class="brand__sub">{SITE.subtitle}</span>
+    </a>
+    <nav class="site-nav" aria-label="主导航">
+      {SITE.nav.map((item) => (
+        <a
+          class="site-nav__link"
+          href={href(item.href)}
+          aria-current={isActive(item.href) ? 'page' : undefined}
+        >
+          {item.label}
+        </a>
+      ))}
+    </nav>
+  </div>
+</header>
