@@ -1,0 +1,82 @@
+---
+import type { AnyEntry } from '../lib/content';
+import { categoryHref, formatDate } from '../lib/content';
+import { tagSlug } from '../lib/tags';
+import { href } from '../lib/url';
+
+interface Props {
+  entry: AnyEntry;
+  headings: ReadonlyArray<{ depth: number; slug: string; text: string }>;
+}
+
+const { entry, headings } = Astro.props;
+const data = entry.data;
+const toc = headings.filter((heading) => heading.depth === 2);
+const compatibility = 'compatibility' in data ? data.compatibility : [];
+const usage = 'usage' in data ? data.usage : '';
+---
+
+<aside class="entry-aside" aria-label="条目速览">
+  {toc.length > 0 && (
+    <nav class="entry-aside__block" aria-labelledby="entry-aside-toc">
+      <p class="mono-label" id="entry-aside-toc">本页</p>
+      <ul class="entry-aside__list">
+        {toc.map((heading) => (
+          <li><a href={`#${heading.slug}`}>{heading.text}</a></li>
+        ))}
+      </ul>
+    </nav>
+  )}
+
+  <div class="entry-aside__block">
+    <p class="mono-label">速览</p>
+    <dl class="entry-aside__facts">
+      <div>
+        <dt>分类</dt>
+        <dd><a href={href(categoryHref(data.category))}>{data.category}</a></dd>
+      </div>
+      <div>
+        <dt>版本</dt>
+        <dd>{data.version}</dd>
+      </div>
+      <div>
+        <dt>更新</dt>
+        <dd>{formatDate(data.updated)}</dd>
+      </div>
+      {data.models.length > 0 && (
+        <div>
+          <dt>模型</dt>
+          <dd>{data.models.join('、')}</dd>
+        </div>
+      )}
+      {compatibility.length > 0 && (
+        <div>
+          <dt>环境</dt>
+          <dd>{compatibility.join('、')}</dd>
+        </div>
+      )}
+    </dl>
+  </div>
+
+  {data.tags.length > 0 && (
+    <div class="entry-aside__block">
+      <p class="mono-label">标签</p>
+      <div class="tag-row">
+        {data.tags.map((tag) => (
+          <a class="chip" href={href(`/tags/${tagSlug(tag)}/`)}>{tag}</a>
+        ))}
+      </div>
+    </div>
+  )}
+
+  {usage && (
+    <div class="entry-aside__block">
+      <p class="mono-label">用法</p>
+      <p class="entry-aside__note">{usage}</p>
+    </div>
+  )}
+
+  <div class="entry-aside__block">
+    <a class="entry-aside__more" href="#entry-meta">完整条目信息 ↓</a>
+  </div>
+</aside>

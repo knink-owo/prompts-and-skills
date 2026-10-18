@@ -3,6 +3,7 @@ import { render } from 'astro:content';
 import type { GetStaticPaths } from 'astro';
 import Base from '../../layouts/Base.astro';
 import ChapterHero from '../../components/ChapterHero.astro';
+import DetailAside from '../../components/DetailAside.astro';
 import EntryMeta from '../../components/EntryMeta.astro';
 import EntryRow from '../../components/EntryRow.astro';
 import Pager from '../../components/Pager.astro';
@@ -30,7 +31,7 @@ interface Props {
 }
 
 const { entry } = Astro.props;
-const { Content } = await render(entry);
+const { Content, headings } = await render(entry);
 const data = entry.data;
 const [related, siblings] = await Promise.all([
   getRelated(entry),
@@ -51,51 +52,54 @@ const installId = 'skill-install';
 
   <section class="section">
     <div class="wrap">
-      <div class="section-head">
-        <p class="section-head__index">01</p>
-        <h2 class="section-head__title">安装</h2>
-        <p class="section-head__lede">可复制的安装命令或放置路径；没有填写时以正文说明为准。</p>
-      </div>
-      {data.install ? (
-        <div class="code-block">
-          <div class="code-block__head">
-            <span class="mono-label">INSTALL</span>
-            <button
-              type="button"
-              class="copy-btn"
-              data-copy-target={`#${installId}`}
-              aria-label="复制安装命令"
-            >
-              <span data-copy-label aria-live="polite">复制</span>
-            </button>
+      <div class="entry-layout">
+        <div class="entry-main">
+          <div class="section-head">
+            <p class="section-head__index">01</p>
+            <h2 class="section-head__title">安装</h2>
+            <p class="section-head__lede">可复制的安装命令或放置路径；没有填写时以正文说明为准。</p>
           </div>
-          <pre class="code-block__body" id={installId}>{data.install}</pre>
+          <div class="entry-block">
+            {data.install ? (
+              <div class="code-block">
+                <div class="code-block__head">
+                  <span class="mono-label">INSTALL</span>
+                  <button
+                    type="button"
+                    class="copy-btn"
+                    data-copy-target={`#${installId}`}
+                    aria-label="复制安装命令"
+                  >
+                    <span data-copy-label aria-live="polite">复制</span>
+                  </button>
+                </div>
+                <pre class="code-block__body" id={installId}>{data.install}</pre>
+              </div>
+            ) : (
+              <p class="note">这条技能没有单独填写安装命令，下面正文里会说明放置位置。</p>
+            )}
+          </div>
+
+          <div class="section-head">
+            <p class="section-head__index">02</p>
+            <h2 class="section-head__title">说明</h2>
+            <p class="section-head__lede">技能正文、使用方式与限制。</p>
+          </div>
+          <div class="prose" data-code-label="CODE">
+            <Content />
+          </div>
+          <div class="btn-row">
+            <a class="btn" href={href(categoryHref(data.category))}>
+              更多「{data.category}」→
+            </a>
+          </div>
         </div>
-      ) : (
-        <p class="note">这条技能没有单独填写安装命令，下面正文里会说明放置位置。</p>
-      )}
-    </div>
-  </section>
-
-  <section class="section">
-    <div class="wrap">
-      <div class="section-head">
-        <p class="section-head__index">02</p>
-        <h2 class="section-head__title">说明</h2>
-        <p class="section-head__lede">技能正文、使用方式与限制。</p>
-      </div>
-      <div class="prose" data-code-label="CODE">
-        <Content />
-      </div>
-      <div class="btn-row">
-        <a class="btn" href={href(categoryHref(data.category))}>
-          更多「{data.category}」→
-        </a>
+        <DetailAside entry={entry} headings={headings} />
       </div>
     </div>
   </section>
 
-  <section class="section">
+  <section class="section" id="entry-meta">
     <div class="wrap">
       <div class="section-head">
         <p class="section-head__index">03</p>

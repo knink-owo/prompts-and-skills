@@ -2,6 +2,8 @@
 
 一个用来收藏、展示、检索自己提示词（prompts）与技能（skills）的静态站点。中文优先，纯静态部署到 GitHub Pages，没有后端、没有数据库、没有运行时框架。
 
+> 新增或更新条目之前，先读 [CONTRIBUTING.md](CONTRIBUTING.md)：里面是 frontmatter、正文结构、版本规则和发布检查清单。
+
 ## 技术栈
 
 - **Astro 7**：构建期把 Markdown 内容集合渲染成 HTML。

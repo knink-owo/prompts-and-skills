@@ -3,6 +3,7 @@ import { render } from 'astro:content';
 import type { GetStaticPaths } from 'astro';
 import Base from '../../layouts/Base.astro';
 import ChapterHero from '../../components/ChapterHero.astro';
+import DetailAside from '../../components/DetailAside.astro';
 import EntryMeta from '../../components/EntryMeta.astro';
 import EntryRow from '../../components/EntryRow.astro';
 import Pager from '../../components/Pager.astro';
@@ -30,7 +31,7 @@ interface Props {
 }
 
 const { entry } = Astro.props;
-const { Content } = await render(entry);
+const { Content, headings } = await render(entry);
 const data = entry.data;
 const [related, siblings] = await Promise.all([
   getRelated(entry),
@@ -50,23 +51,28 @@ const tone = toneOf(data.category);
 
   <section class="section">
     <div class="wrap">
-      <div class="section-head">
-        <p class="section-head__index">01</p>
-        <h2 class="section-head__title">内容</h2>
-        <p class="section-head__lede">提示词在第一个代码块，右上角一键复制；后面是用法与限制。</p>
-      </div>
-      <div class="prose" data-code-label="PROMPT">
-        <Content />
-      </div>
-      <div class="btn-row">
-        <a class="btn" href={href(categoryHref(data.category))}>
-          更多「{data.category}」→
-        </a>
+      <div class="entry-layout">
+        <div class="entry-main">
+          <div class="section-head">
+            <p class="section-head__index">01</p>
+            <h2 class="section-head__title">内容</h2>
+            <p class="section-head__lede">提示词在第一个代码块，右上角一键复制；后面是用法与限制。</p>
+          </div>
+          <div class="prose" data-code-label="PROMPT">
+            <Content />
+          </div>
+          <div class="btn-row">
+            <a class="btn" href={href(categoryHref(data.category))}>
+              更多「{data.category}」→
+            </a>
+          </div>
+        </div>
+        <DetailAside entry={entry} headings={headings} />
       </div>
     </div>
   </section>
 
-  <section class="section">
+  <section class="section" id="entry-meta">
     <div class="wrap">
       <div class="section-head">
         <p class="section-head__index">02</p>
