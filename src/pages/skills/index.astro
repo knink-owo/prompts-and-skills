@@ -4,9 +4,9 @@ import ChapterHero from '../../components/ChapterHero.astro';
 import EntryRow from '../../components/EntryRow.astro';
 import EmptyState from '../../components/EmptyState.astro';
 import FilterBar from '../../components/FilterBar.astro';
-import { formatDate, getSkills } from '../../lib/content';
+import { formatDate, getAllTags, getSkills } from '../../lib/content';
 
-const skills = await getSkills();
+const [skills, tags] = await Promise.all([getSkills(), getAllTags()]);
 const latest = skills[0]?.data.updated;
 const meta = [
   `${String(skills.length).padStart(2, '0')} 个`,
@@ -16,7 +16,7 @@ const meta = [
 
 <Base
   title="技能"
-  description="可复用的 agent 技能：安装方式、适用环境、文件清单与版本；与提示词共用分类与标签。"
+  description="可复用的 agent 技能：安装方式、适用环境、文件清单与版本；与提示词共用标签。"
 >
   <ChapterHero
     index="COLLECTION / SKILLS"
@@ -31,10 +31,10 @@ const meta = [
       <div class="section-head">
         <p class="section-head__index">01</p>
         <h2 class="section-head__title">全部技能</h2>
-        <p class="section-head__lede">按更新时间排序。技能仍在整理中，先留一个明确的入口。</p>
+        <p class="section-head__lede">按更新时间排序。技能与提示词共用标签，筛选在本地完成。</p>
       </div>
 
-      <FilterBar count={skills.length} />
+      <FilterBar count={skills.length} tags={tags} />
 
       {skills.length > 0 ? (
         <div class="chapter-index">
@@ -55,7 +55,7 @@ const meta = [
       <EmptyState
         hidden
         title="没有匹配的技能"
-        body="换一个关键词，或清除分类筛选。"
+        body="换一个关键词，或清除标签筛选。"
       />
     </div>
   </section>

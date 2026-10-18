@@ -8,14 +8,14 @@ import EntryMeta from '../../components/EntryMeta.astro';
 import EntryRow from '../../components/EntryRow.astro';
 import Pager from '../../components/Pager.astro';
 import {
-  categoryHref,
   formatDate,
   getRelated,
   getSiblings,
   getSkills,
-  toneOf,
+  toneOfEntry,
   type SkillEntry,
 } from '../../lib/content';
+import { tagName, tagSlug } from '../../lib/tags';
 import { href } from '../../lib/url';
 
 export const getStaticPaths = (async () => {
@@ -37,7 +37,8 @@ const [related, siblings] = await Promise.all([
   getRelated(entry),
   getSiblings(entry),
 ]);
-const tone = toneOf(data.category);
+const tone = toneOfEntry(entry);
+const firstTag = data.tags[0];
 const installId = 'skill-install';
 ---
 
@@ -46,7 +47,7 @@ const installId = 'skill-install';
     index={`SKILL / v${data.version}`}
     title={data.title}
     lede={data.summary}
-    meta={`${data.category} · 更新 ${formatDate(data.updated)}`}
+    meta={`${data.tags.length} 个标签 · 更新 ${formatDate(data.updated)}`}
     tone={tone}
   />
 
@@ -89,9 +90,13 @@ const installId = 'skill-install';
             <Content />
           </div>
           <div class="btn-row">
-            <a class="btn" href={href(categoryHref(data.category))}>
-              更多「{data.category}」→
-            </a>
+            {firstTag ? (
+              <a class="btn" href={href(`/tags/${tagSlug(firstTag)}/`)}>
+                更多「{tagName(firstTag)}」→
+              </a>
+            ) : (
+              <a class="btn" href={href('/catalog/')}>浏览目录 →</a>
+            )}
           </div>
         </div>
         <DetailAside entry={entry} headings={headings} />
@@ -116,7 +121,7 @@ const installId = 'skill-install';
         <div class="section-head">
           <p class="section-head__index">04</p>
           <h2 class="section-head__title">相关条目</h2>
-          <p class="section-head__lede">按共享标签与同分类排序。</p>
+          <p class="section-head__lede">按共享标签排序。</p>
         </div>
         <div class="chapter-index">
           {related.map((item, index) => (

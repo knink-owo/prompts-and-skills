@@ -1,7 +1,6 @@
 ---
 title: Obsidian 插件开发
 summary: 从脚手架到提交的 Obsidian 社区插件开发流程：官方命名与发布规则、随技能自带运行时的构建与校验、L1–L4 分层验证，以及不会冷启动 Obsidian 的安全边界。
-category: 编程
 tags: [Obsidian, 插件开发, Agent Skill, 工具链]
 models: [Claude, GPT, DeepSeek]
 version: 1.0.0

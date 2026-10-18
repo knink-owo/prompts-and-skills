@@ -1,17 +1,17 @@
 ---
-import { CATEGORIES } from '../site.config';
+import type { TagSummary } from '../lib/tags';
 import { href } from '../lib/url';
 
 interface Props {
   count: number;
-  showCategories?: boolean;
+  tags?: TagSummary[];
   q?: string;
   action?: string;
 }
 
 const {
   count,
-  showCategories = true,
+  tags = [],
   q = '',
   action = '/search/',
 } = Astro.props;
@@ -35,16 +35,16 @@ const {
     autocomplete="off"
     data-filter-input
   />
-  {showCategories && (
-    <div class="tag-row" role="group" aria-label="按分类筛选">
-      {CATEGORIES.map((category) => (
+  {tags.length > 0 && (
+    <div class="tag-row" role="group" aria-label="按标签筛选">
+      {tags.map((tag) => (
         <button
           type="button"
           class="chip"
-          data-filter-tag={category.name}
+          data-filter-tag={tag.slug}
           aria-pressed="false"
         >
-          {category.name}
+          {tag.name}
         </button>
       ))}
     </div>

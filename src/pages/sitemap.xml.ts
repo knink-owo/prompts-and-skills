@@ -1,5 +1,4 @@
 import type { APIRoute } from 'astro';
-import { CATEGORIES } from '../site.config';
 import { getAllTags, getPrompts, getSkills } from '../lib/content';
 import { href } from '../lib/url';
 
@@ -35,9 +34,6 @@ export const GET: APIRoute = async ({ site }) => {
     { loc: abs('/catalog/') },
     { loc: abs('/search/') },
     { loc: abs('/about/') },
-    ...CATEGORIES.map((category) => ({
-      loc: abs(`/categories/${category.slug}/`),
-    })),
     ...tags.map((tag) => ({ loc: abs(`/tags/${tag.slug}/`) })),
     ...prompts.map((entry) => ({
       loc: abs(`/prompts/${entry.id}/`),

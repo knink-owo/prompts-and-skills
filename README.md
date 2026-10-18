@@ -1,4 +1,4 @@
-# PROMPT INDEX
+# PROMPT + SKILL
 
 一个用来收藏、展示、检索自己提示词（prompts）与技能（skills）的静态站点。中文优先，纯静态部署到 GitHub Pages，没有后端、没有数据库、没有运行时框架。
 
@@ -9,7 +9,7 @@
 - **Astro 7**：构建期把 Markdown 内容集合渲染成 HTML。
 - **INK 设计语言**：`public/design/tokens.css` + `site.css` + `site.js`；0 圆角、1px 描边、八色场、系统字体。
 - **运行时零依赖**：页面只引 `tokens.css`、`site.css`、`site.js`、`favicon.svg`；没有客户端框架、CDN、外链字体或图标库。
-- **搜索**：构建期把标题、摘要、标签、模型、分类写进每个条目的 `data-search-text`，运行时由 `site.js` 就地过滤；没有搜索服务。
+- **搜索**：构建期把标题、摘要、标签、模型写进每个条目的 `data-search-text`，运行时由 `site.js` 就地过滤；没有搜索服务。
 
 ## 快速开始
 
@@ -44,7 +44,7 @@ pnpm new:prompt
 pnpm new:skill
 ```
 
-脚本会问标题、摘要、分类、标签、模型和文件名 slug，生成合法 frontmatter 与正文骨架；同名文件已存在时拒绝覆盖。也可以直接复制已有 Markdown 手写。
+脚本会问标题、摘要、标签、模型和文件名 slug，生成合法 frontmatter 与正文骨架；同名文件已存在时拒绝覆盖。也可以直接复制已有 Markdown 手写。
 
 ### Frontmatter
 
@@ -52,8 +52,7 @@ pnpm new:skill
 | --- | --- | --- |
 | `title` | 是 | 条目标题，页面唯一 `<h1>` 的来源之一 |
 | `summary` | 是 | 一句话摘要，≤200 字；列表与搜索用 |
-| `category` | 是 | 必须是 8 个分类之一（见下表） |
-| `tags` | 否 | 字符串数组；标签页按 slug 去重 |
+| `tags` | 否 | 字符串数组；站点唯一的分组来源，标签页自动生成 |
 | `models` | 否 | 适用模型，字符串数组 |
 | `version` | 否 | 默认 `0.1.0` |
 | `updated` | 否 | `YYYY-MM-DD`；列表按它倒序 |
@@ -65,32 +64,22 @@ pnpm new:skill
 | `install` | skills 可选 | 一行安装命令 |
 | `compatibility` | skills 可选 | 兼容平台数组 |
 
-### 分类与色场
+### 标签与色场
 
-| 分类 | slug | INK tone |
-| --- | --- | --- |
-| 翻译 | `translation` | lake |
-| 写作 | `writing` | lotus |
-| 编程 | `coding` | moss |
-| 研究 | `research` | stone |
-| 学习 | `learning` | wheat |
-| 效率 | `productivity` | clay |
-| 视觉 | `visual` | rouge |
-| 其他 | `misc` | sky |
+站点不再有预设分类。`tags` 是自由数组，`#翻译` 和 `翻译` 会归一成同一个标签；标签页、首页标签墙、目录、计数和筛选 chips 都在构建时自动生成。新增标签不需要改代码，重新构建/部署即可。
 
-分类只取 INK 已有的 8 个色场；不新增色相，不做暗色模式。
+标签颜色由 `tagTone()` 用 slug 的稳定 hash 映射到 INK 的 8 个色场；同一标签跨页面同色，不新增色相，不做暗色模式。
 
 ## 路由
 
 | 路径 | 内容 |
 | --- | --- |
 | `/` | 首页：大标题、色墙、最新条目、引导 |
-| `/prompts/` | 提示词列表，带搜索与分类 chip |
-| `/prompts/<slug>/` | 提示词详情：正文、复制按钮、元信息、相关条目 |
+| `/prompts/` | 提示词列表，带搜索与标签 chip |
+| `/prompts/<slug>/` | 提示词详情：正文、复制按钮、右侧速览、元信息、相关条目 |
 | `/skills/` | 技能列表；无条目时显示有意留白 |
-| `/skills/<slug>/` | 技能详情：安装块、正文、元信息 |
-| `/catalog/` | 8 个分类 + 全部标签，带计数 |
-| `/categories/<slug>/` | 分类列表 |
+| `/skills/<slug>/` | 技能详情：安装块、正文、右侧速览、元信息 |
+| `/catalog/` | 全部标签与收录规模 |
 | `/tags/<tag>/` | 标签列表 |
 | `/search/` | 跨 prompts/skills 搜索 |
 | `/about/` | 站点说明、收录方式、字段表 |
@@ -131,7 +120,7 @@ $env:BASE_PATH='prompts-and-skills'; $env:SITE_URL='https://example.github.io'; 
 - 只用 `public/design/` 里的 INK token 与 class；页面不写 `<style>`、不写 `style=`。
 - 不引入新色相、圆角、渐变、玻璃拟态、阴影、暗色模式。
 - 每页一个 `<h1>`；图片必须有 `alt`；键盘可操作；`prefers-reduced-motion` 降级。
-- 项目级扩展集中在 `site.css` 末尾的「项目扩展」段：`.prose`、`.filter-bar`、`.chapter-row__meta`、`.wall-band__count`、`.chip[aria-pressed]`、`[hidden]`，以及补全的 `.chapter-row--sky/--wheat/--rouge`。
+- 项目级扩展集中在 `site.css` 末尾的「项目扩展」段：`.prose`、`.filter-bar`、`.chapter-row__meta`、`.wall-band__count`、`.chip[aria-pressed]`、`[hidden]`、`.entry-layout`/`.entry-aside`，以及补全的 `.chapter-row--sky/--wheat/--rouge`。
 - 代码块由 `site.js` 在运行时包成 `.code-block` 并加复制按钮；`syntaxHighlight: false` 保证复制出来是原文，不带高亮 span。
 
 ## 脚本

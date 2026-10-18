@@ -1,7 +1,6 @@
 import { createInterface } from 'node:readline/promises';
 import { stdin, stdout } from 'node:process';
 import {
-  CATEGORIES,
   entryPath,
   fallbackSlug,
   parseArgs,
@@ -14,7 +13,7 @@ import {
 } from './lib.mjs';
 
 const args = parseArgs(process.argv.slice(2));
-const needsPrompt = !args.title || !args.summary || !args.category || !args.slug;
+const needsPrompt = !args.title || !args.summary || !args.slug;
 const rl = needsPrompt
   ? createInterface({ input: stdin, output: stdout })
   : null;
@@ -33,16 +32,9 @@ try {
   if (!summary) throw new Error('摘要不能为空。');
   if ([...summary].length > 200) throw new Error('摘要超过 200 字。');
 
-  const category = String(
-    args.category || (await ask(`分类（${CATEGORIES.join(' / ')}）：`, '其他')),
-  ).trim();
-  if (!CATEGORIES.includes(category)) {
-    throw new Error(`分类必须是：${CATEGORIES.join('、')}`);
-  }
-
   const tags = args.tags
     ? parseList(args.tags)
-    : parseList(await ask('标签（逗号分隔，可留空）：'));
+    : parseList(await ask('标签（逗号分隔，可带 #，可留空）：'));
   const models = args.models
     ? parseList(args.models)
     : parseList(await ask('适用模型（逗号分隔，可留空）：'));
@@ -64,7 +56,6 @@ try {
   const body = `---
 title: ${yamlString(title)}
 summary: ${yamlString(summary)}
-category: ${yamlString(category)}
 tags: ${yamlList(tags)}
 models: ${yamlList(models)}
 version: 0.1.0

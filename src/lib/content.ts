@@ -1,11 +1,12 @@
 import { getCollection, type CollectionEntry } from 'astro:content';
+import type { Tone } from '../site.config';
 import {
-  CATEGORIES,
-  type Category,
-  type CategoryName,
-  type Tone,
-} from '../site.config';
-import { buildTagIndex, tagSlug, uniqueTags, type TagSummary } from './tags';
+  buildTagIndex,
+  tagSlug,
+  tagTone,
+  uniqueTags,
+  type TagSummary,
+} from './tags';
 
 export type PromptEntry = CollectionEntry<'prompts'>;
 export type SkillEntry = CollectionEntry<'skills'>;
@@ -34,18 +35,10 @@ export async function getAllEntries(): Promise<AnyEntry[]> {
   return [...prompts, ...skills].sort(byUpdatedDesc);
 }
 
-export function categoryOf(name: string): Category {
-  const found = CATEGORIES.find((category) => category.name === name);
-  if (found) return found;
-  return CATEGORIES[CATEGORIES.length - 1]!;
-}
-
-export function categoryHref(name: string): string {
-  return `/categories/${categoryOf(name).slug}/`;
-}
-
-export function toneOf(name: string): Tone {
-  return categoryOf(name).tone;
+/** The first tag drives the row colour; untagged entries fall back to stone. */
+export function toneOfEntry(entry: AnyEntry): Tone {
+  const first = entry.data.tags[0];
+  return first ? tagTone(first) : 'stone';
 }
 
 export function entryHref(entry: AnyEntry): string {
@@ -69,13 +62,7 @@ export function formatDate(date: Date): string {
 
 export function searchText(entry: AnyEntry): string {
   const data = entry.data;
-  return [
-    data.title,
-    data.summary,
-    data.category,
-    ...data.tags,
-    ...data.models,
-  ]
+  return [data.title, data.summary, ...data.tags, ...data.models]
     .join(' ')
     .toLowerCase();
 }
@@ -87,27 +74,16 @@ export async function getAllTags(): Promise<TagSummary[]> {
   );
 }
 
+export async function getTopTags(limit: number): Promise<TagSummary[]> {
+  const tags = await getAllTags();
+  return tags.slice(0, limit);
+}
+
 export async function getEntriesByTag(slug: string): Promise<AnyEntry[]> {
   const entries = await getAllEntries();
   return entries.filter((entry) =>
     entry.data.tags.some((tag) => tagSlug(tag) === slug),
   );
-}
-
-export async function getEntriesByCategory(name: string): Promise<AnyEntry[]> {
-  const entries = await getAllEntries();
-  return entries.filter((entry) => entry.data.category === name);
-}
-
-export async function getCategoryCounts(): Promise<Record<CategoryName, number>> {
-  const entries = await getAllEntries();
-  const counts = Object.fromEntries(
-    CATEGORIES.map((category) => [category.name, 0]),
-  ) as Record<CategoryName, number>;
-  for (const entry of entries) {
-    counts[entry.data.category] += 1;
-  }
-  return counts;
 }
 
 export async function getStats() {
@@ -120,7 +96,6 @@ export async function getStats() {
     prompts: prompts.length,
     skills: skills.length,
     tags: tags.length,
-    categories: CATEGORIES.length,
   };
 }
 
@@ -139,8 +114,7 @@ export async function getRelated(
       const shared = candidate.data.tags.filter((tag) =>
         tags.has(tagSlug(tag)),
       ).length;
-      const sameCategory = candidate.data.category === entry.data.category ? 1 : 0;
-      return { candidate, score: shared * 2 + sameCategory };
+      return { candidate, score: shared * 2 };
     })
     .filter(({ score }) => score > 0)
     .sort(

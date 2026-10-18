@@ -1622,6 +1622,11 @@ a { color: var(--ink-link); text-decoration-thickness: 1px; text-underline-offse
 
 /* --- 打印 ---------------------------------------------------------------- */
 
+/* --- 项目扩展：锚点避开 sticky 顶栏 -------------------------------------- */
+html {
+  scroll-padding-top: calc(64px + var(--ink-space-5));
+}
+
 @media print {
   .site-header, .site-footer, .copy-btn, .skip-link { display: none; }
 

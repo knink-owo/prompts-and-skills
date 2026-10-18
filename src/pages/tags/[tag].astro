@@ -44,7 +44,7 @@ const entries = await getEntriesByTag(tag.slug);
         <p class="section-head__lede">按更新时间排序；可在本标签内继续搜索。</p>
       </div>
 
-      <FilterBar count={entries.length} showCategories={false} />
+      <FilterBar count={entries.length} />
 
       {entries.length > 0 ? (
         <div class="chapter-index">

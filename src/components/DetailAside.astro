@@ -1,7 +1,7 @@
 ---
 import type { AnyEntry } from '../lib/content';
-import { categoryHref, formatDate } from '../lib/content';
-import { tagSlug } from '../lib/tags';
+import { collectionLabel, formatDate } from '../lib/content';
+import { tagName, tagSlug } from '../lib/tags';
 import { href } from '../lib/url';
 
 interface Props {
@@ -32,8 +32,8 @@ const usage = 'usage' in data ? data.usage : '';
     <p class="mono-label">速览</p>
     <dl class="entry-aside__facts">
       <div>
-        <dt>分类</dt>
-        <dd><a href={href(categoryHref(data.category))}>{data.category}</a></dd>
+        <dt>类型</dt>
+        <dd>{collectionLabel(entry)}</dd>
       </div>
       <div>
         <dt>版本</dt>
@@ -63,7 +63,7 @@ const usage = 'usage' in data ? data.usage : '';
       <p class="mono-label">标签</p>
       <div class="tag-row">
         {data.tags.map((tag) => (
-          <a class="chip" href={href(`/tags/${tagSlug(tag)}/`)}>{tag}</a>
+          <a class="chip" href={href(`/tags/${tagSlug(tag)}/`)}>{tagName(tag)}</a>
         ))}
       </div>
     </div>

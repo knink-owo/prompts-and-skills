@@ -1,12 +1,10 @@
 import { defineCollection } from 'astro:content';
 import { z } from 'astro/zod';
 import { glob } from 'astro/loaders';
-import { CATEGORY_NAMES, type CategoryName } from './site.config';
 
 const base = z.object({
   title: z.string().min(1),
   summary: z.string().min(1).max(200),
-  category: z.enum([...CATEGORY_NAMES] as [CategoryName, ...CategoryName[]]),
   tags: z.array(z.string()).default([]),
   models: z.array(z.string()).default([]),
   version: z.string().default('0.1.0'),

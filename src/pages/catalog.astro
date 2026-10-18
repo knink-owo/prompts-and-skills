@@ -2,25 +2,21 @@
 import Base from '../layouts/Base.astro';
 import ChapterHero from '../components/ChapterHero.astro';
 import EmptyState from '../components/EmptyState.astro';
-import { CATEGORIES } from '../site.config';
-import { getAllTags, getCategoryCounts, getStats } from '../lib/content';
+import { getAllTags, getStats } from '../lib/content';
+import { tagTone } from '../lib/tags';
 import { href } from '../lib/url';
 
-const [tags, counts, stats] = await Promise.all([
-  getAllTags(),
-  getCategoryCounts(),
-  getStats(),
-]);
+const [tags, stats] = await Promise.all([getAllTags(), getStats()]);
 ---
 
 <Base
   title="目录"
-  description="按分类与标签浏览全部提示词和技能；分类对应固定的色场，标签按使用频率排序。"
+  description="按标签浏览全部提示词和技能；标签从条目 frontmatter 自动汇总，新增内容后重新部署即可更新。"
 >
   <ChapterHero
     index="INDEX / CATALOG"
     title="目录"
-    lede="按分类与标签浏览。分类是固定的八个入口，标签是跨条目的自由连接。"
+    lede="按标签浏览。标签不是预设分类，而是从每条内容的 tags 字段自动汇总。"
     meta={`${stats.prompts} 条提示词 · ${stats.skills} 个技能 · ${tags.length} 个标签`}
     tone="stone"
   />
@@ -29,25 +25,29 @@ const [tags, counts, stats] = await Promise.all([
     <div class="wrap">
       <div class="section-head">
         <p class="section-head__index">01</p>
-        <h2 class="section-head__title">分类</h2>
-        <p class="section-head__lede">八个分类，每个分类一个色场；从使用场景进入。</p>
+        <h2 class="section-head__title">标签</h2>
+        <p class="section-head__lede">按出现次数排序；点进去可以看同一标签下的全部提示词与技能。</p>
       </div>
-      <div class="chapter-index">
-        {CATEGORIES.map((category, index) => (
-          <a
-            class={`chapter-row chapter-row--${category.tone}`}
-            href={href(`/categories/${category.slug}/`)}
-          >
-            <span class="chapter-row__num">{String(index + 1).padStart(2, '0')}</span>
-            <span class="chapter-row__title">{category.name}</span>
-            <span class="chapter-row__lede">
-              {category.description}
-              <span class="chapter-row__meta">{counts[category.name]} 条</span>
-            </span>
-            <span class="chapter-row__arrow" aria-hidden="true">→</span>
-          </a>
-        ))}
-      </div>
+      {tags.length > 0 ? (
+        <div class="chapter-index">
+          {tags.map((tag, index) => (
+            <a
+              class={`chapter-row chapter-row--${tagTone(tag.slug)}`}
+              href={href(`/tags/${tag.slug}/`)}
+            >
+              <span class="chapter-row__num">{String(index + 1).padStart(2, '0')}</span>
+              <span class="chapter-row__title">#{tag.name}</span>
+              <span class="chapter-row__lede">
+                跨提示词与技能的标签
+                <span class="chapter-row__meta">{tag.count} 条</span>
+              </span>
+              <span class="chapter-row__arrow" aria-hidden="true">→</span>
+            </a>
+          ))}
+        </div>
+      ) : (
+        <EmptyState title="还没有标签" body="给条目加 tags 后，标签会自动出现在这里。" />
+      )}
     </div>
   </section>
 
@@ -55,20 +55,19 @@ const [tags, counts, stats] = await Promise.all([
     <div class="wrap">
       <div class="section-head">
         <p class="section-head__index">02</p>
-        <h2 class="section-head__title">标签</h2>
-        <p class="section-head__lede">按出现次数排序；点进去可以看同一标签下的全部条目。</p>
+        <h2 class="section-head__title">规模</h2>
+        <p class="section-head__lede">当前收录数量；每次新增内容并重新部署后自动更新。</p>
       </div>
-      {tags.length > 0 ? (
-        <div class="tag-row">
-          {tags.map((tag) => (
-            <a class="chip" href={href(`/tags/${tag.slug}/`)}>
-              {tag.name} · {tag.count}
-            </a>
-          ))}
-        </div>
-      ) : (
-        <EmptyState title="还没有标签" body="给条目加 tags 后，标签会自动出现在这里。" />
-      )}
+      <div class="table-wrap">
+        <table class="spec-table">
+          <caption>当前收录</caption>
+          <tbody>
+            <tr><th scope="row">提示词</th><td>{stats.prompts} 条</td></tr>
+            <tr><th scope="row">技能</th><td>{stats.skills} 个</td></tr>
+            <tr><th scope="row">标签</th><td>{stats.tags} 个</td></tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </section>
 </Base>

@@ -4,17 +4,6 @@ import { fileURLToPath } from 'node:url';
 
 export const ROOT = fileURLToPath(new URL('..', import.meta.url));
 
-export const CATEGORIES = [
-  '翻译',
-  '写作',
-  '编程',
-  '研究',
-  '学习',
-  '效率',
-  '视觉',
-  '其他',
-];
-
 export function today() {
   const parts = new Intl.DateTimeFormat('en-CA', {
     timeZone: 'Asia/Shanghai',

@@ -4,9 +4,9 @@ import ChapterHero from '../../components/ChapterHero.astro';
 import EntryRow from '../../components/EntryRow.astro';
 import EmptyState from '../../components/EmptyState.astro';
 import FilterBar from '../../components/FilterBar.astro';
-import { formatDate, getPrompts } from '../../lib/content';
+import { formatDate, getAllTags, getPrompts } from '../../lib/content';
 
-const prompts = await getPrompts();
+const [prompts, tags] = await Promise.all([getPrompts(), getAllTags()]);
 const latest = prompts[0]?.data.updated;
 const meta = [
   `${String(prompts.length).padStart(2, '0')} 条`,
@@ -16,7 +16,7 @@ const meta = [
 
 <Base
   title="提示词"
-  description="全部提示词，按更新时间排序；支持关键词搜索与分类筛选，原文可一键复制。"
+  description="全部提示词，按更新时间排序；支持关键词搜索与标签筛选，原文可一键复制。"
 >
   <ChapterHero
     index="COLLECTION / PROMPTS"
@@ -31,10 +31,10 @@ const meta = [
       <div class="section-head">
         <p class="section-head__index">01</p>
         <h2 class="section-head__title">全部提示词</h2>
-        <p class="section-head__lede">按更新时间排序。搜索与分类筛选在本地完成，不上传任何查询。</p>
+        <p class="section-head__lede">按更新时间排序。搜索与标签筛选在本地完成，不上传任何查询。</p>
       </div>
 
-      <FilterBar count={prompts.length} />
+      <FilterBar count={prompts.length} tags={tags} />
 
       {prompts.length > 0 ? (
         <div class="chapter-index">
@@ -53,7 +53,7 @@ const meta = [
       <EmptyState
         hidden
         title="没有匹配的提示词"
-        body="换一个关键词，或清除分类筛选。"
+        body="换一个关键词，或清除标签筛选。"
       />
     </div>
   </section>

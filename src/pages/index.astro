@@ -1,25 +1,23 @@
 ---
 import Base from '../layouts/Base.astro';
-import CategoryWall from '../components/CategoryWall.astro';
+import TagWall from '../components/TagWall.astro';
 import EntryRow from '../components/EntryRow.astro';
 import EmptyState from '../components/EmptyState.astro';
-import { CATEGORIES } from '../site.config';
-import {
-  formatDate,
-  getCategoryCounts,
-  getPrompts,
-  getStats,
-} from '../lib/content';
+import { getAllTags, formatDate, getPrompts, getSkills, getStats } from '../lib/content';
+import { tagTone } from '../lib/tags';
 import { href } from '../lib/url';
 
-const [counts, stats, prompts] = await Promise.all([
-  getCategoryCounts(),
+const [tags, stats, prompts, skills] = await Promise.all([
+  getAllTags(),
   getStats(),
   getPrompts(),
+  getSkills(),
 ]);
 
 const featured = prompts.find((entry) => entry.data.featured) ?? prompts[0];
+const latestSkill = skills[0];
 const updated = prompts[0]?.data.updated;
+const topTags = tags.slice(0, 8);
 ---
 
 <Base>
@@ -28,10 +26,10 @@ const updated = prompts[0]?.data.updated;
       <p class="mono-label">PERSONAL ARCHIVE / 2026</p>
       <h1 class="display">
         <span class="display__line">提示词</span>
-        <span class="display__line display__line--accent">索引</span>
+        <span class="display__line display__line--accent">与技能</span>
       </h1>
       <p class="hero__lead">
-        把真正好用的提示词与技能收进来：原文可复制，用法可追溯，版本可比较。
+        把真正好用的提示词与 agent 技能收进来：原文可复制，用法可追溯，标签自动汇总。
       </p>
       <div class="hero__foot">
         <p class="hero__note">
@@ -43,7 +41,7 @@ const updated = prompts[0]?.data.updated;
         <a class="btn btn--primary" href={href('/prompts/')}>浏览提示词 →</a>
       </div>
     </div>
-    <CategoryWall counts={counts} />
+    <TagWall tags={topTags} />
   </section>
 
   <section class="section">
@@ -73,25 +71,32 @@ const updated = prompts[0]?.data.updated;
     <div class="wrap">
       <div class="section-head">
         <p class="section-head__index">02</p>
-        <h2 class="section-head__title">分类索引</h2>
-        <p class="section-head__lede">八个分类，各自对应一块色场；按使用场景找，而不是按热度。</p>
+        <h2 class="section-head__title">标签索引</h2>
+        <p class="section-head__lede">标签从条目里自动汇总；同一个标签可以跨提示词与技能。</p>
       </div>
-      <div class="chapter-index">
-        {CATEGORIES.map((category, index) => (
-          <a
-            class={`chapter-row chapter-row--${category.tone}`}
-            href={href(`/categories/${category.slug}/`)}
-          >
-            <span class="chapter-row__num">{String(index + 1).padStart(2, '0')}</span>
-            <span class="chapter-row__title">{category.name}</span>
-            <span class="chapter-row__lede">
-              {category.description}
-              <span class="chapter-row__meta">{counts[category.name]} 条</span>
-            </span>
-            <span class="chapter-row__arrow" aria-hidden="true">→</span>
-          </a>
-        ))}
-      </div>
+      {tags.length > 0 ? (
+        <div class="chapter-index">
+          {tags.map((tag, index) => (
+            <a
+              class={`chapter-row chapter-row--${tagTone(tag.slug)}`}
+              href={href(`/tags/${tag.slug}/`)}
+            >
+              <span class="chapter-row__num">{String(index + 1).padStart(2, '0')}</span>
+              <span class="chapter-row__title">#{tag.name}</span>
+              <span class="chapter-row__lede">
+                标签下的全部条目
+                <span class="chapter-row__meta">{tag.count} 条</span>
+              </span>
+              <span class="chapter-row__arrow" aria-hidden="true">→</span>
+            </a>
+          ))}
+        </div>
+      ) : (
+        <EmptyState
+          title="还没有标签"
+          body="给条目加上 tags 后，标签会自动出现在这里；不需要修改代码。"
+        />
+      )}
     </div>
   </section>
 
@@ -102,20 +107,19 @@ const updated = prompts[0]?.data.updated;
         <h2 class="section-head__title">技能</h2>
         <p class="section-head__lede">可复用的 agent 技能：安装方式、适用环境与文件清单。</p>
       </div>
-      {stats.skills === 0 ? (
+      {latestSkill ? (
+        <div class="chapter-index">
+          <EntryRow entry={latestSkill} index={0} />
+        </div>
+      ) : (
         <EmptyState
           title="技能库还是空的"
-          body="第一条技能会出现在这里。它和提示词共用分类、标签与版本字段。"
-        >
-          <div class="btn-row">
-            <a class="btn" href={href('/about/')}>如何收录 →</a>
-          </div>
-        </EmptyState>
-      ) : (
-        <div class="btn-row">
-          <a class="btn" href={href('/skills/')}>浏览技能 →</a>
-        </div>
+          body="第一条技能会出现在这里。它和提示词共用标签与版本字段。"
+        />
       )}
+      <div class="btn-row">
+        <a class="btn" href={href('/skills/')}>全部技能 →</a>
+      </div>
     </div>
   </section>
 </Base>

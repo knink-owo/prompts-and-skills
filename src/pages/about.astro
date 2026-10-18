@@ -32,7 +32,7 @@ const repo = SITE.repo;
 
         <h2>内容怎么组织</h2>
         <p>
-          内容以 Markdown 存放在仓库里，提示词在 <code>src/content/prompts/</code>，技能在 <code>src/content/skills/</code> 技能与提示词共用一套 frontmatter。新增一条后，列表、分类、标签、搜索索引和 sitemap 都会在下次构建时更新。
+          内容以 Markdown 存放在仓库里，提示词在 <code>src/content/prompts/</code>，技能在 <code>src/content/skills/</code>；技能与提示词共用一套 frontmatter。新增一条后，列表、标签、搜索索引和 sitemap 都会在下次构建时更新。
         </p>
         <p>新增条目可以直接新建 Markdown，也可以用脚本生成骨架：</p>
         <pre><code>pnpm new:prompt
@@ -54,8 +54,7 @@ pnpm new:skill</code></pre>
             <tbody>
               <tr><td><code>title</code></td><td>是</td><td>中文标题，同时用于页面标题与列表。</td></tr>
               <tr><td><code>summary</code></td><td>是</td><td>一句话摘要，最多 200 字；列表与 meta description 共用。</td></tr>
-              <tr><td><code>category</code></td><td>是</td><td>八个固定分类之一；决定条目的色场。</td></tr>
-              <tr><td><code>tags</code></td><td>否</td><td>自由标签；自动生成标签页。</td></tr>
+              <tr><td><code>tags</code></td><td>否</td><td>自由标签，也是站点唯一的分组来源；自动生成标签页与筛选 chips。</td></tr>
               <tr><td><code>models</code></td><td>否</td><td>适用模型；只写真正验证过的。</td></tr>
               <tr><td><code>version</code></td><td>否</td><td>条目版本，默认 <code>0.1.0</code>。</td></tr>
               <tr><td><code>updated</code></td><td>是</td><td>最后更新日期；决定排序与 sitemap lastmod。</td></tr>
@@ -77,7 +76,7 @@ pnpm new:skill</code></pre>
           视觉使用 INK 设计语言：纸白底、0 圆角、1px 描边、八块色场、系统字体。运行时只加载两份 CSS 和一份原生 JS，不引框架、CDN、外链字体或图标库。
         </p>
         <p>
-          页面里没有暗色模式，也没有动画库。搜索、分类筛选和代码复制都由原生 JavaScript 完成；禁用脚本时，列表、详情和链接仍然可读。
+          页面里没有暗色模式，也没有动画库。搜索、标签筛选和代码复制都由原生 JavaScript 完成；禁用脚本时，列表、详情和链接仍然可读。
         </p>
 
         <h2>许可与反馈</h2>

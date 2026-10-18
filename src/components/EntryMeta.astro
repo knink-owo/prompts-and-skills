@@ -1,7 +1,7 @@
 ---
 import type { AnyEntry } from '../lib/content';
-import { categoryHref, formatDate } from '../lib/content';
-import { tagSlug } from '../lib/tags';
+import { formatDate } from '../lib/content';
+import { tagName, tagSlug } from '../lib/tags';
 import { href } from '../lib/url';
 
 interface Props {
@@ -20,16 +20,12 @@ const isExternal = /^https?:\/\//.test(data.source);
     <caption>条目信息</caption>
     <tbody>
       <tr>
-        <th scope="row">分类</th>
-        <td><a href={href(categoryHref(data.category))}>{data.category}</a></td>
-      </tr>
-      <tr>
         <th scope="row">标签</th>
         <td>
           {data.tags.length > 0 ? (
             <span class="tag-row">
               {data.tags.map((tag) => (
-                <a class="chip" href={href(`/tags/${tagSlug(tag)}/`)}>{tag}</a>
+                <a class="chip" href={href(`/tags/${tagSlug(tag)}/`)}>{tagName(tag)}</a>
               ))}
             </span>
           ) : (

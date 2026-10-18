@@ -5,9 +5,9 @@ import {
   entryHref,
   formatDate,
   searchText,
-  toneOf,
+  toneOfEntry,
 } from '../lib/content';
-import { tagSlug } from '../lib/tags';
+import { tagName, tagSlug } from '../lib/tags';
 import { href } from '../lib/url';
 
 interface Props {
@@ -19,13 +19,15 @@ interface Props {
 const { entry, index, hidden = false } = Astro.props;
 const data = entry.data;
 const number = String(index + 1).padStart(2, '0');
+const tagLine = data.tags.length > 0
+  ? data.tags.slice(0, 2).map(tagName).join(' / ')
+  : '未标记';
 ---
 
 <a
-  class={`chapter-row chapter-row--${toneOf(data.category)}`}
+  class={`chapter-row chapter-row--${toneOfEntry(entry)}`}
   href={href(entryHref(entry))}
   data-filter-item
-  data-category={data.category}
   data-tags={data.tags.map(tagSlug).join('|')}
   data-search-text={searchText(entry)}
   hidden={hidden}
@@ -35,7 +37,7 @@ const number = String(index + 1).padStart(2, '0');
   <span class="chapter-row__lede">
     {data.summary}
     <span class="chapter-row__meta">
-      {collectionLabel(entry)} · {data.category} · {formatDate(data.updated)}
+      {collectionLabel(entry)} · {tagLine} · {formatDate(data.updated)}
     </span>
   </span>
   <span class="chapter-row__arrow" aria-hidden="true">→</span>

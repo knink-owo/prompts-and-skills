@@ -248,7 +248,7 @@
     });
   };
 
-  /* --- 四、列表筛选：标题、标签、分类；只在有 data-filter 的区域启用 -------- */
+  /* --- 四、列表筛选：标题、标签；只在有 data-filter 的区域启用 ------------ */
 
   const setupFilter = () => {
     document.querySelectorAll("[data-filter]").forEach((scope) => {
@@ -268,10 +268,10 @@
 
         for (const item of items) {
           const text = (item.getAttribute("data-search-text") || "").toLowerCase();
-          const category = item.getAttribute("data-category") || "";
+          const tags = (item.getAttribute("data-tags") || "").split("|").filter(Boolean);
           const show =
             (!query || text.includes(query)) &&
-            (!activeTag || category === activeTag);
+            (!activeTag || tags.includes(activeTag));
           item.hidden = !show;
           if (show) visible += 1;
         }
