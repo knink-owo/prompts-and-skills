@@ -1453,6 +1453,44 @@ a { color: var(--ink-link); text-decoration-thickness: 1px; text-underline-offse
   .entry-meta .spec-table { min-width: 0; }
 }
 
+/* --- 项目扩展：浅色代码块 ------------------------------------------------ */
+
+.code-block {
+  background: var(--ink-surface);
+  color: var(--ink-ink);
+  border: var(--ink-border);
+}
+
+.code-block__head {
+  background: var(--ink-line);
+  border-bottom: var(--ink-border);
+}
+
+.code-block__head .mono-label { color: var(--ink-text-secondary); }
+
+.code-block__body {
+  background: var(--ink-surface);
+  color: var(--ink-ink);
+}
+
+.copy-btn {
+  border-color: var(--ink-control-border);
+  color: var(--ink-ink);
+}
+
+.copy-btn:hover { background: var(--ink-line); }
+
+.copy-btn.is-copied {
+  background: var(--ink-ink);
+  color: var(--ink-canvas);
+}
+
+.prose > pre {
+  background: var(--ink-surface);
+  color: var(--ink-ink);
+  border: var(--ink-border);
+}
+
 /* --- 打印 ---------------------------------------------------------------- */
 
 @media print {
