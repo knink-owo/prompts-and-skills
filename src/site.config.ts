@@ -6,7 +6,7 @@ export const SITE = {
     '个人提示词与技能收藏：可直接复制的提示词、使用说明、版本与已知限制。',
   author: '',
   // Fill after creating the GitHub repository, e.g. https://github.com/<you>/prompts-and-skills
-  repo: '',
+  repo: 'https://github.com/knink-owo/prompts-and-skills',
   locale: 'zh-CN',
   nav: [
     { href: '/prompts/', label: '提示词' },
