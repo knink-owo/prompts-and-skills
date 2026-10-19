@@ -15,7 +15,7 @@ const [tags, stats, prompts, skills] = await Promise.all([
 ]);
 
 const featured = prompts.find((entry) => entry.data.featured) ?? prompts[0];
-const latestSkill = skills[0];
+const latestSkills = skills.slice(0, 3);
 const updated = prompts[0]?.data.updated;
 const topTags = tags.slice(0, 8);
 ---
@@ -71,6 +71,31 @@ const topTags = tags.slice(0, 8);
     <div class="wrap">
       <div class="section-head">
         <p class="section-head__index">02</p>
+        <h2 class="section-head__title">最新技能</h2>
+        <p class="section-head__lede">最近更新的技能；完整列表在技能页。</p>
+      </div>
+      {latestSkills.length > 0 ? (
+        <div class="chapter-index">
+          {latestSkills.map((entry, index) => (
+            <EntryRow entry={entry} index={index} />
+          ))}
+        </div>
+      ) : (
+        <EmptyState
+          title="技能库还是空的"
+          body="第一条技能会出现在这里。它和提示词共用标签与版本字段。"
+        />
+      )}
+      <div class="btn-row">
+        <a class="btn" href={href('/skills/')}>全部技能 →</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="section-head__index">03</p>
         <h2 class="section-head__title">标签索引</h2>
         <p class="section-head__lede">标签从条目里自动汇总；同一个标签可以跨提示词与技能。</p>
       </div>
@@ -97,29 +122,6 @@ const topTags = tags.slice(0, 8);
           body="给条目加上 tags 后，标签会自动出现在这里；不需要修改代码。"
         />
       )}
-    </div>
-  </section>
-
-  <section class="section">
-    <div class="wrap">
-      <div class="section-head">
-        <p class="section-head__index">03</p>
-        <h2 class="section-head__title">技能</h2>
-        <p class="section-head__lede">可复用的 agent 技能：安装方式、适用环境与文件清单。</p>
-      </div>
-      {latestSkill ? (
-        <div class="chapter-index">
-          <EntryRow entry={latestSkill} index={0} />
-        </div>
-      ) : (
-        <EmptyState
-          title="技能库还是空的"
-          body="第一条技能会出现在这里。它和提示词共用标签与版本字段。"
-        />
-      )}
-      <div class="btn-row">
-        <a class="btn" href={href('/skills/')}>全部技能 →</a>
-      </div>
     </div>
   </section>
 </Base>
