@@ -3,20 +3,18 @@ import Base from '../layouts/Base.astro';
 import TagWall from '../components/TagWall.astro';
 import EntryRow from '../components/EntryRow.astro';
 import EmptyState from '../components/EmptyState.astro';
-import { getAllTags, formatDate, getPrompts, getSkills, getStats } from '../lib/content';
+import { getAllEntries, getAllTags, formatDate, getStats } from '../lib/content';
 import { tagTone } from '../lib/tags';
 import { href } from '../lib/url';
 
-const [tags, stats, prompts, skills] = await Promise.all([
+const [tags, stats, entries] = await Promise.all([
   getAllTags(),
   getStats(),
-  getPrompts(),
-  getSkills(),
+  getAllEntries(),
 ]);
 
-const featured = prompts.find((entry) => entry.data.featured) ?? prompts[0];
-const latestSkills = skills.slice(0, 3);
-const updated = prompts[0]?.data.updated;
+const latest = entries.slice(0, 5);
+const updated = entries[0]?.data.updated;
 const topTags = tags.slice(0, 8);
 ---
 
@@ -49,44 +47,22 @@ const topTags = tags.slice(0, 8);
       <div class="section-head">
         <p class="section-head__index">01</p>
         <h2 class="section-head__title">最新收录</h2>
-        <p class="section-head__lede">每条都保留原文、用法与已知限制，不把提示词当魔法。</p>
+        <p class="section-head__lede">提示词与技能按更新时间排在一起；每条都保留原文、用法与已知限制。</p>
       </div>
-      {featured ? (
+      {latest.length > 0 ? (
         <div class="chapter-index">
-          <EntryRow entry={featured} index={0} />
-        </div>
-      ) : (
-        <EmptyState
-          title="还没有提示词"
-          body="在 src/content/prompts/ 下新建一个 Markdown 文件，或运行 pnpm new:prompt。"
-        />
-      )}
-      <div class="btn-row">
-        <a class="btn" href={href('/prompts/')}>全部提示词 →</a>
-      </div>
-    </div>
-  </section>
-
-  <section class="section">
-    <div class="wrap">
-      <div class="section-head">
-        <p class="section-head__index">02</p>
-        <h2 class="section-head__title">最新技能</h2>
-        <p class="section-head__lede">最近更新的技能；完整列表在技能页。</p>
-      </div>
-      {latestSkills.length > 0 ? (
-        <div class="chapter-index">
-          {latestSkills.map((entry, index) => (
+          {latest.map((entry, index) => (
             <EntryRow entry={entry} index={index} />
           ))}
         </div>
       ) : (
         <EmptyState
-          title="技能库还是空的"
-          body="第一条技能会出现在这里。它和提示词共用标签与版本字段。"
+          title="还没有收录"
+          body="在 src/content/prompts/ 或 src/content/skills/ 下新建 Markdown 文件，或运行 pnpm new:prompt / new:skill。"
         />
       )}
       <div class="btn-row">
+        <a class="btn" href={href('/prompts/')}>全部提示词 →</a>
         <a class="btn" href={href('/skills/')}>全部技能 →</a>
       </div>
     </div>
@@ -95,7 +71,7 @@ const topTags = tags.slice(0, 8);
   <section class="section">
     <div class="wrap">
       <div class="section-head">
-        <p class="section-head__index">03</p>
+        <p class="section-head__index">02</p>
         <h2 class="section-head__title">标签索引</h2>
         <p class="section-head__lede">标签从条目里自动汇总；同一个标签可以跨提示词与技能。</p>
       </div>
